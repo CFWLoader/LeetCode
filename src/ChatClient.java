@@ -3,6 +3,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
+import java.net.Socket;
 import java.util.Date;
 
 /**
@@ -12,7 +14,7 @@ public class ChatClient extends Frame {
 
     private TextField textField = new TextField(50);
 
-    private TextArea textArea = new TextArea(50, 80);
+    private TextArea textArea = new TextArea(40, 80);
 
     public static void main(String[] args){
         new ChatClient().launchFrame();
@@ -37,6 +39,8 @@ public class ChatClient extends Frame {
 
         textField.addActionListener(new TextFieldListener());
 
+        this.connect();
+
         this.setVisible(true);
     }
 
@@ -49,6 +53,15 @@ public class ChatClient extends Frame {
             textArea.append(String.valueOf(new Date(System.currentTimeMillis())) + "\n");
             textArea.append("    " + str + "\n\n");
             textField.setText("");
+        }
+    }
+
+    public void connect(){
+        try {
+            Socket socket = new Socket("127.0.0.1", 4991);
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.exit(-1);
         }
     }
 }
