@@ -1,5 +1,6 @@
 #include <iostream>
 #include <unistd.h>
+#include "utils/ServerSocket.h"
 
 using namespace std;
 
@@ -9,9 +10,13 @@ void *thread_method(void* args) {
 }
 
 int main() {
+    /*
     pthread_t th;
     pthread_create(&th, 0, thread_method, 0);
     pthread_join(th, 0);
     cout << "Hello, World!" << endl;
+    */
+    ServerSocket serverSocket(4991);
+    serverSocket.isInitialized()? cout << "Done." << endl : cout << "Failed." << endl;
     return 0;
 }
