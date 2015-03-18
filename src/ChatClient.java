@@ -3,10 +3,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
 import java.util.Date;
 
@@ -40,6 +37,24 @@ public class ChatClient extends Frame {
         this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
+                output.close();
+                try {
+                    socket.close();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                    File exceptionFile = new File("errorlog.txt");
+                    try {
+                        FileOutputStream outputStream = new FileOutputStream(exceptionFile);
+                        PrintWriter printWriter = new PrintWriter(outputStream);
+                        for(int i = 0; i < e1.getStackTrace().length; ++i) {
+                            printWriter.println(e1.getStackTrace()[i]);
+                        }
+                    } catch (FileNotFoundException e2) {
+                        e2.printStackTrace();
+                        System.out.println("Fatal error.");
+                        System.exit(-4);
+                    }
+                }
                 System.exit(0);
             }
         });

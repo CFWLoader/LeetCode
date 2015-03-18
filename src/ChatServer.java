@@ -65,6 +65,7 @@ public class ChatServer {
             while (true) {
                 try {
                     words = inputStream.readLine();
+                    if(words == null)break;
                     System.out.println(words);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -77,6 +78,12 @@ public class ChatServer {
                         System.exit(-3);
                     }
                 }*/
+            }
+            try {
+                inputStream.close();
+                clientSocket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }

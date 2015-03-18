@@ -5,10 +5,14 @@
 * ###Chat server class.
 * ###Socket to connect server and client.
 * ###Multithreading in server for dealing with client connection.
+* ###Reactions of client aborting connection.
+* ###Some Exception handles.(Except for fatal error.)
 
 ## News in this version
-* ###Multithreading in server for dealing with client connection.
+* ###Some Exception handles.(Except for fatal error.)
 
-## Problem waiting for solution
-* ###How server reacts when client aborts connection.
-* ###How server reacts when socket exception happens.
+## Fixed problems
+* ###Exceptions happen when Client aborts connection.
+
+## Problems waiting for solution
+* ###Complex try-catch clauses and embedded try-catch.
