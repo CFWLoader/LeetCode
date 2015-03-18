@@ -1,6 +1,11 @@
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.Semaphore;
 
 /**
  * Created by cfwloader on 3/17/15.
@@ -9,15 +14,27 @@ public class ChatServer {
 
     private ServerSocket serverSocket;
 
+    private static Set<ClientService> clients;
+
     public static void main(String[] args) {
 
         ChatServer chatServer = new ChatServer();
 
+        chatServer.clients = new ConcurrentSkipListSet<ClientService>();
+
+        Socket socket;
+
+        ClientService clientService;
+
+        Thread clientServiceThread;
+
         while (true) {
             try {
-                Socket socket = chatServer.serverSocket.accept();
+                socket = chatServer.serverSocket.accept();
                 System.out.println("A client joint." + socket.getPort());
-                Thread clientServiceThread = new Thread(new ClientService(socket));
+                clientService = new ClientService(socket);
+                chatServer.clients.add(clientService);
+                clientServiceThread = new Thread(clientService);
                 clientServiceThread.start();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -35,16 +52,26 @@ public class ChatServer {
         }
     }
 
-    private static class ClientService implements Runnable {
+    public static void broadcast(String msg){
+        for(ClientService clientService : clients){
+            clientService.getPrintWriter().println(clientService.clientSocket.getPort() + ":  " + msg);
+            clientService.getPrintWriter().flush();
+        }
+    }
+
+    private static class ClientService implements Runnable,Comparable<ClientService> {
 
         private Socket clientSocket;
 
         private BufferedReader inputStream;
 
+        private PrintWriter printWriter;
+
         ClientService(Socket socket) {
             clientSocket = socket;
             try {
                 inputStream = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                printWriter = new PrintWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
             } catch (IOException e) {
                 e.printStackTrace();
             }/* finally {
@@ -67,6 +94,7 @@ public class ChatServer {
                     words = inputStream.readLine();
                     if(words == null)break;
                     System.out.println(words);
+                    ChatServer.broadcast(words);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }/* finally {
@@ -81,10 +109,26 @@ public class ChatServer {
             }
             try {
                 inputStream.close();
+                printWriter.close();
+
+                ChatServer.clients.remove(this);
+                System.out.println("Client: " + clientSocket.getPort() + " exited.");
+
                 clientSocket.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+
+        public PrintWriter getPrintWriter() {
+            return printWriter;
+        }
+
+        @Override
+        public int compareTo(ClientService o) {
+            if(o == null)return -1;
+            if(this == o)return 0;
+            else return 1;
         }
     }
 }

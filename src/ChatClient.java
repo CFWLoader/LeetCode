@@ -1,3 +1,4 @@
+import javax.xml.soap.Text;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -5,6 +6,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.*;
 import java.net.Socket;
+import java.nio.Buffer;
 import java.util.Date;
 
 /**
@@ -19,6 +21,10 @@ public class ChatClient extends Frame {
     private Socket socket;
 
     private PrintWriter output;
+
+    private BufferedReader input;
+
+    private Thread massageListenThread;
 
     public static void main(String[] args){
         new ChatClient().launchFrame();
@@ -37,8 +43,9 @@ public class ChatClient extends Frame {
         this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                output.close();
                 try {
+                    input.close();
+                    output.close();
                     socket.close();
                 } catch (IOException e1) {
                     e1.printStackTrace();
@@ -63,6 +70,9 @@ public class ChatClient extends Frame {
 
         this.connect();
 
+        massageListenThread = new Thread(new MassageListenThread(input, textArea));
+        massageListenThread.start();
+
         this.setVisible(true);
     }
 
@@ -72,8 +82,10 @@ public class ChatClient extends Frame {
         public void actionPerformed(ActionEvent e) {
             String str = textField.getText().trim();
             //textArea.setText(str);
+            /*
             textArea.append(String.valueOf(new Date(System.currentTimeMillis())) + "\n");
             textArea.append("    " + str + "\n\n");
+            */
             output.println(str);
             output.flush();
             textField.setText("");
@@ -84,9 +96,42 @@ public class ChatClient extends Frame {
         try {
             socket = new Socket("127.0.0.1", 4991);
             output = new PrintWriter(socket.getOutputStream());
+            input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         } catch (IOException e) {
             e.printStackTrace();
             System.exit(-1);
+        }
+    }
+
+    private class MassageListenThread implements Runnable{
+
+        private BufferedReader input;
+
+        private TextArea textArea;
+
+        private MassageListenThread(BufferedReader input, TextArea textArea) {
+            this.input = input;
+            this.textArea = textArea;
+        }
+
+        @Override
+        public void run() {
+            String words;
+            while(true){
+                try {
+                    words = input.readLine();
+                    if(words == null)break;
+                    textArea.append(String.valueOf(new Date(System.currentTimeMillis())) + "\n");
+                    textArea.append("    " + words + "\n\n");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    input = null;
+                    textArea = null;
+                }
+            }
+
+            input = null;
+            textArea = null;
         }
     }
 }

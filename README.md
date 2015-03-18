@@ -7,12 +7,14 @@
 * ###Multithreading in server for dealing with client connection.
 * ###Reactions of client aborting connection.
 * ###Some Exception handles.(Except for fatal error.)
+* ###Implement chat room basic function:a message from a client can broadcast to others in the room.
 
 ## News in this version
-* ###Some Exception handles.(Except for fatal error.)
+* ###Implement chat room basic function:a message from a client can broadcast to others in the room.
 
 ## Fixed problems
-* ###Exceptions happen when Client aborts connection.
+* ###Inverse of control in server classes.
 
 ## Problems waiting for solution
 * ###Complex try-catch clauses and embedded try-catch.
+* ###Due to massage listen thread,client can't react to closing event.
