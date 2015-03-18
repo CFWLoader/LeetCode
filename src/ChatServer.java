@@ -54,8 +54,16 @@ public class ChatServer {
 
     public static void broadcast(String msg){
         for(ClientService clientService : clients){
+            try {
+                clientService.getOutputStream().writeUTF(msg);
+                clientService.getOutputStream().flush();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            /*
             clientService.getPrintWriter().println(clientService.clientSocket.getPort() + ":  " + msg);
             clientService.getPrintWriter().flush();
+            */
         }
     }
 
@@ -63,15 +71,15 @@ public class ChatServer {
 
         private Socket clientSocket;
 
-        private BufferedReader inputStream;
+        private DataInputStream inputStream;
 
-        private PrintWriter printWriter;
+        private DataOutputStream outputStream;
 
         ClientService(Socket socket) {
             clientSocket = socket;
             try {
-                inputStream = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-                printWriter = new PrintWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
+                inputStream = new DataInputStream(clientSocket.getInputStream());
+                outputStream = new DataOutputStream(clientSocket.getOutputStream());
             } catch (IOException e) {
                 e.printStackTrace();
             }/* finally {
@@ -91,10 +99,12 @@ public class ChatServer {
             String words;
             while (true) {
                 try {
-                    words = inputStream.readLine();
+                    words = inputStream.readUTF();
                     if(words == null)break;
                     System.out.println(words);
                     ChatServer.broadcast(words);
+                } catch (EOFException eof){
+                    break;
                 } catch (IOException e) {
                     e.printStackTrace();
                 }/* finally {
@@ -109,7 +119,7 @@ public class ChatServer {
             }
             try {
                 inputStream.close();
-                printWriter.close();
+                inputStream.close();
 
                 ChatServer.clients.remove(this);
                 System.out.println("Client: " + clientSocket.getPort() + " exited.");
@@ -120,8 +130,8 @@ public class ChatServer {
             }
         }
 
-        public PrintWriter getPrintWriter() {
-            return printWriter;
+        public DataOutputStream getOutputStream() {
+            return outputStream;
         }
 
         @Override

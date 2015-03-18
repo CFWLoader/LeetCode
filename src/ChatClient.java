@@ -1,4 +1,3 @@
-import javax.xml.soap.Text;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -6,7 +5,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.*;
 import java.net.Socket;
-import java.nio.Buffer;
 import java.util.Date;
 
 /**
@@ -20,9 +18,11 @@ public class ChatClient extends Frame {
 
     private Socket socket;
 
-    private PrintWriter output;
+    private DataOutputStream output;
 
-    private BufferedReader input;
+    private DataInputStream input;
+
+    private MassageListenThread massageListener;
 
     private Thread massageListenThread;
 
@@ -40,10 +40,14 @@ public class ChatClient extends Frame {
         this.add(textField, BorderLayout.SOUTH);
         this.pack();
 
+        //System.out.println("Frame launched");
+
         this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
+                //System.out.println("Closing event triggered.");
                 try {
+                    massageListener.setStopRequest(true);
                     input.close();
                     output.close();
                     socket.close();
@@ -53,7 +57,7 @@ public class ChatClient extends Frame {
                     try {
                         FileOutputStream outputStream = new FileOutputStream(exceptionFile);
                         PrintWriter printWriter = new PrintWriter(outputStream);
-                        for(int i = 0; i < e1.getStackTrace().length; ++i) {
+                        for (int i = 0; i < e1.getStackTrace().length; ++i) {
                             printWriter.println(e1.getStackTrace()[i]);
                         }
                     } catch (FileNotFoundException e2) {
@@ -66,11 +70,14 @@ public class ChatClient extends Frame {
             }
         });
 
+        //System.out.println("Event added.");
+
         textField.addActionListener(new TextFieldListener());
 
         this.connect();
 
-        massageListenThread = new Thread(new MassageListenThread(input, textArea));
+        massageListener = new MassageListenThread(input, textArea);
+        massageListenThread = new Thread(massageListener);
         massageListenThread.start();
 
         this.setVisible(true);
@@ -86,8 +93,13 @@ public class ChatClient extends Frame {
             textArea.append(String.valueOf(new Date(System.currentTimeMillis())) + "\n");
             textArea.append("    " + str + "\n\n");
             */
-            output.println(str);
-            output.flush();
+            try {
+                output.writeUTF(str);
+                output.flush();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+
             textField.setText("");
         }
     }
@@ -95,8 +107,8 @@ public class ChatClient extends Frame {
     public void connect(){
         try {
             socket = new Socket("127.0.0.1", 4991);
-            output = new PrintWriter(socket.getOutputStream());
-            input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            output = new DataOutputStream(socket.getOutputStream());
+            input = new DataInputStream(socket.getInputStream());
         } catch (IOException e) {
             e.printStackTrace();
             System.exit(-1);
@@ -105,33 +117,44 @@ public class ChatClient extends Frame {
 
     private class MassageListenThread implements Runnable{
 
-        private BufferedReader input;
+        private DataInputStream input;
 
         private TextArea textArea;
 
-        private MassageListenThread(BufferedReader input, TextArea textArea) {
+        private boolean stopRequest;
+
+        private MassageListenThread(DataInputStream input, TextArea textArea) {
             this.input = input;
             this.textArea = textArea;
+            stopRequest = false;
         }
 
         @Override
         public void run() {
             String words;
-            while(true){
+            while(true && !stopRequest){
                 try {
-                    words = input.readLine();
-                    if(words == null)break;
+                    words = input.readUTF();                       //The old reason that stop closing actions is used BufferedReader readline method.
+                    if(words == null)break;                         //It will block the thread even the input stream is closed. I have used DataInputStream to replace it.
                     textArea.append(String.valueOf(new Date(System.currentTimeMillis())) + "\n");
                     textArea.append("    " + words + "\n\n");
+                } catch (EOFException eofException){
+                    input = null;
+                    textArea = null;
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    //e.printStackTrace();
                     input = null;
                     textArea = null;
                 }
             }
 
+            System.out.println("Listen thread stopped.");
             input = null;
             textArea = null;
+        }
+
+        public void setStopRequest(boolean stopRequest) {
+            this.stopRequest = stopRequest;
         }
     }
 }
