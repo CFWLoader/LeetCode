@@ -5,9 +5,12 @@
 #ifndef _CHATROOM_CHATSERVER_H_
 #define _CHATROOM_CHATSERVER_H_
 
+#include "../utils/ServerSocket.h"
+
 class ChatServer {
 public:
 private:
+
 };
 
 

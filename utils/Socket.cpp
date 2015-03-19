@@ -91,3 +91,18 @@ int Socket::sendMessage(std::string& msg) {
     }
     return result;
 }
+
+std::string Socket::receiveMessage() {
+    if(!this->isInitialized()){
+        std::cerr << "The socket haven't been initialized." << std::endl;
+        throw std::exception();
+    }
+    char inputBuffer[1024];
+    int result = ::recv(sock_fd, inputBuffer, 1024, 0);
+    if(result == -1){
+        std::cerr << "Failed to receive message." << std::endl;
+        throw std::exception();
+    }
+    std::string msg(inputBuffer);
+    return msg;
+}

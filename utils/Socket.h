@@ -22,6 +22,7 @@ public:
     int getSocketHandler() const;
     int connect();
     int sendMessage(std::string&);
+    std::string receiveMessage();
 private:
     int sock_fd;
     sockaddr_in addr;
