@@ -6,7 +6,6 @@
 * ### Server and client socket can work correctly.
 
 ## News in this version
-* ### Server and client socket can work correctly.
 
 ## Problems waiting for solution
 * ### How to run server and client together in a project(Current solution is use multiprocessing).

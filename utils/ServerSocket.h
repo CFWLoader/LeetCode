@@ -20,9 +20,10 @@ class ServerSocket {
 public:
     ServerSocket(int);
     ServerSocket(std::string, int);
+    virtual ~ServerSocket();
     bool isInitialized();
     Socket* accept();
-    virtual ~ServerSocket();
+    int sendMessage(const Socket&, std::string&);
 private:
     int sock_fd;
     sockaddr_in addr;

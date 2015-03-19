@@ -55,7 +55,7 @@ Socket::~Socket() {
     shutdown(sock_fd, SHUT_RDWR);
 }
 
-bool Socket::isInitialzed() {
+bool Socket::isInitialized() const {
     return -1 != sock_fd;
 }
 
@@ -66,4 +66,16 @@ int Socket::connect() {
         close(sock_fd);
     }
     return result;
+}
+
+short Socket::getPort() const {
+    return addr.sin_port;
+}
+
+in_addr Socket::getAddress() const {
+    return addr.sin_addr;
+}
+
+int Socket::getSocketHandler() const {
+    return sock_fd;
 }

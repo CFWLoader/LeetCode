@@ -72,3 +72,11 @@ Socket* ServerSocket::accept() {
     Socket* client = new Socket(client_fd, client_addr);
     return client;
 }
+
+int ServerSocket::sendMessage(const Socket& target, std::string& msg){
+    int result = ::send(target.getSocketHandler(), msg.c_str(), 1024, 0);
+    if(result == -1){
+        std::cerr << "Server failed to send message to client." << std::endl;
+    }
+    return result;
+}

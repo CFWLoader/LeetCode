@@ -15,9 +15,13 @@ class Socket {
 public:
     Socket(std::string, int);
     Socket(int, sockaddr_in);
-    bool isInitialzed();
-    int connect();
     virtual ~Socket();
+    bool isInitialized() const;
+    short getPort() const;
+    in_addr getAddress() const;
+    int getSocketHandler() const;
+    int connect();
+    int sendMessage(std::string&);
 private:
     int sock_fd;
     sockaddr_in addr;
