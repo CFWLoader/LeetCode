@@ -3,6 +3,10 @@
 
 ## Implements function
 * ### Server socket initialization.
+* ### Server and client socket can work correctly.
 
-## Fixed problems
-* ### C library reference in C++.
+## News in this version
+* ### Server and client socket can work correctly.
+
+## Problems waiting for solution
+* ### How to run server and client together in a project(Current solution is use multiprocessing).
