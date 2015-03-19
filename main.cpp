@@ -18,5 +18,11 @@ int main() {
     */
     ServerSocket serverSocket(4991);
     serverSocket.isInitialized()? cout << "Done." << endl : cout << "Failed." << endl;
+    Socket* socket = 0;
+    while(true){
+        socket = serverSocket.accept();
+        cout << "A client connected." << endl;
+        delete socket;
+    }
     return 0;
 }

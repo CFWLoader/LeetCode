@@ -1,8 +1,8 @@
-#Chat Room (C++ Version)
-##Constructed Components
-* ###NULL
+# Chat Room (C++ Version)
+##(Note: Infrastructure is based on linux.)
 
-##Constructing Components
-* ###ServerSocket class
-* ###Socket class
-* ###ChatServer class
+## Implements function
+* ### Server socket initialization.
+
+## Fixed problems
+* ### C library reference in C++.

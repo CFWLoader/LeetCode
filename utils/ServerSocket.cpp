@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <string.h>
+#include <unistd.h>
 #include "ServerSocket.h"
 
 ServerSocket::ServerSocket(std::string address, int port) {
@@ -45,22 +46,19 @@ ServerSocket::ServerSocket(int port){
     int result = bind(sock_fd, (sockaddr*) &addr, sizeof(sockaddr));
     if(result == -1){
         std::cerr << "Failed to bind address." << std::endl;
-        shutdown(sock_fd, SHUT_RDWR);
-        sock_fd = -1;
+        close(sock_fd);
         return;
     }
     result = listen(sock_fd, MAX_CONNECTION_LIMIT);
     if(result == -1){
         std::cerr << "Failed to listen." << std::endl;
-        shutdown(sock_fd, SHUT_RDWR);
-        sock_fd = -1;
+        close(sock_fd);
         return;
     }
 }
 
 ServerSocket::~ServerSocket() {
-    shutdown(sock_fd, SHUT_RDWR);
-    sock_fd = -1;
+    close(sock_fd);
 }
 
 bool ServerSocket::isInitialized() {
@@ -68,8 +66,9 @@ bool ServerSocket::isInitialized() {
 }
 
 Socket* ServerSocket::accept() {
-    sockaddr_in client;
+    sockaddr_in client_addr;
     int sin_size = sizeof(sockaddr_in);
-    int client_fd = accept(sock_fd, (sockaddr*) &client, &sin_size);
-    Socket* client = new Socket(client_fd, client);
+    int client_fd = ::accept(sock_fd, (sockaddr*)&client_addr, (socklen_t*)&sin_size);
+    Socket* client = new Socket(client_fd, client_addr);
+    return client;
 }

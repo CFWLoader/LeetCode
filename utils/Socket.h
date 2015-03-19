@@ -15,6 +15,8 @@ class Socket {
 public:
     Socket(std::string, int);
     Socket(int, sockaddr_in);
+    bool isInitialzed();
+    int connect();
     virtual ~Socket();
 private:
     int sock_fd;
