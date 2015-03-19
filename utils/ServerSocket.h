@@ -24,6 +24,7 @@ public:
     bool isInitialized();
     Socket* accept();
     int sendMessage(const Socket&, std::string&);
+    std::string receiveMessage(const Socket&);
 private:
     int sock_fd;
     sockaddr_in addr;

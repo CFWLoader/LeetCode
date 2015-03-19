@@ -79,3 +79,15 @@ in_addr Socket::getAddress() const {
 int Socket::getSocketHandler() const {
     return sock_fd;
 }
+
+int Socket::sendMessage(std::string& msg) {
+    if(!this->isInitialized()){
+        std::cerr << "The socket haven't been initialized." << std::endl;
+        return -1;
+    }
+    int result = ::send(sock_fd, msg.c_str(), 1024, 0);
+    if(result == -1){
+        std::cerr << "Failed to send message." << std::endl;
+    }
+    return result;
+}

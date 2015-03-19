@@ -66,6 +66,10 @@ bool ServerSocket::isInitialized() {
 }
 
 Socket* ServerSocket::accept() {
+    if(!this->isInitialized()){
+        std::cerr << "The server socket haven't been initialized." << std::endl;
+        return 0;
+    }
     sockaddr_in client_addr;
     int sin_size = sizeof(sockaddr_in);
     int client_fd = ::accept(sock_fd, (sockaddr*)&client_addr, (socklen_t*)&sin_size);
@@ -74,9 +78,28 @@ Socket* ServerSocket::accept() {
 }
 
 int ServerSocket::sendMessage(const Socket& target, std::string& msg){
+    if(!this->isInitialized()){
+        std::cerr << "The server socket haven't been initialized." << std::endl;
+        return -1;
+    }
     int result = ::send(target.getSocketHandler(), msg.c_str(), 1024, 0);
     if(result == -1){
         std::cerr << "Server failed to send message to client." << std::endl;
     }
     return result;
+}
+
+std::string ServerSocket::receiveMessage(const Socket& client) {
+    if(!this->isInitialized()){
+        std::cerr << "The socket haven't been initialized." << std::endl;
+        throw std::exception();
+    }
+    char inputBuffer[1024];
+    int result = ::recv(client.getSocketHandler(), inputBuffer, 1024, 0);
+    if(result == -1){
+        std::cerr << "Failed to receive message." << std::endl;
+        throw std::exception();
+    }
+    std::string msg(inputBuffer);
+    return msg;
 }

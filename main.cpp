@@ -26,11 +26,14 @@ int main() {
         while (true) {
             socket = serverSocket.accept();
             cout << "A client connected." << endl;
+            cout << serverSocket.receiveMessage(*socket) << endl;
             delete socket;
         }
     } else {
         Socket client("127.0.0.1", 4991);
-        client.connect() > -1 ? cout << "Connected." << endl : cout << "Failed." << endl;;
+        client.connect() > -1 ? cout << "Connected." << endl : cout << "Failed." << endl;
+        string msg = "hello";
+        client.sendMessage(msg);
     }
     return 0;
 }
