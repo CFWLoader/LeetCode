@@ -15,6 +15,7 @@ public class ChatServer {
 
     private static Set<ClientService> clients;
 
+    /*
     public static void main(String[] args) {
 
         ChatServer chatServer = new ChatServer();
@@ -41,6 +42,7 @@ public class ChatServer {
             }
         }
     }
+    */
 
     ChatServer() {
         try {
@@ -49,6 +51,22 @@ public class ChatServer {
             e.printStackTrace();
             System.exit(-1);
         }
+    }
+
+    public ServerSocket getServerSocket() {
+        return serverSocket;
+    }
+
+    public void setServerSocket(ServerSocket serverSocket) {
+        this.serverSocket = serverSocket;
+    }
+
+    public static Set<ClientService> getClients() {
+        return clients;
+    }
+
+    public static void setClients(Set<ClientService> clients) {
+        ChatServer.clients = clients;
     }
 
     public static void broadcast(String msg){
