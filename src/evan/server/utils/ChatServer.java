@@ -44,7 +44,7 @@ public class ChatServer {
     }
     */
 
-    ChatServer() {
+    public ChatServer() {
         try {
             serverSocket = new ServerSocket(4991);
         } catch (IOException e) {
@@ -61,15 +61,15 @@ public class ChatServer {
         this.serverSocket = serverSocket;
     }
 
-    public static Set<ClientService> getClients() {
+    public Set<ClientService> getClients() {
         return clients;
     }
 
-    public static void setClients(Set<ClientService> clients) {
+    public void setClients(Set<ClientService> clients) {
         ChatServer.clients = clients;
     }
 
-    public static void broadcast(String msg){
+    public void broadcast(String msg){
         for(ClientService clientService : clients){
             try {
                 clientService.getOutputStream().writeUTF(msg);
@@ -84,6 +84,7 @@ public class ChatServer {
         }
     }
 
+    /*
     private static class ClientService implements Runnable,Comparable<ClientService> {
 
         private Socket clientSocket;
@@ -108,7 +109,7 @@ public class ChatServer {
                     e.printStackTrace();
                     System.exit(-2);
                 }
-            }*/
+            }
         }
 
         @Override
@@ -132,7 +133,7 @@ public class ChatServer {
                         e.printStackTrace();
                         System.exit(-3);
                     }
-                }*/
+                }
             }
             try {
                 inputStream.close();
@@ -158,4 +159,5 @@ public class ChatServer {
             else return 1;
         }
     }
+    */
 }

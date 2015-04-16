@@ -28,11 +28,22 @@ public class ChatClient extends Frame {
 
     private Thread massageListenThread;
 
-    /*
     public static void main(String[] args){
-        new ChatClient().launchFrame();
+        new ChatClient().loginFrame();
+        //new ChatClient().launchFrame();
     }
-    */
+
+    public int loginFrame(){
+
+        this.setLocation(750, 200);
+        setSize(160, 120);
+
+        this.setVisible(true);
+
+
+
+        return 0;
+    }
 
     public void launchFrame(){
 
