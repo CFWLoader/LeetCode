@@ -20,6 +20,8 @@ public class ClientService extends Thread implements Comparable<ClientService>{
 
     private DataOutputStream outputStream;
 
+    private String username;
+
     public ClientService(ChatServer chatServer, Socket socket) {
 
         this.host = chatServer;
@@ -51,7 +53,7 @@ public class ClientService extends Thread implements Comparable<ClientService>{
                 words = inputStream.readUTF();
                 if(words == null)break;
                 System.out.println(words);
-                host.broadcast(words);
+                host.broadcast(username + ": " + words);
             } catch (EOFException eof){
                 break;
             } catch (IOException e) {
@@ -83,10 +85,22 @@ public class ClientService extends Thread implements Comparable<ClientService>{
         return outputStream;
     }
 
+    public DataInputStream getInputStream() {
+        return inputStream;
+    }
+
     @Override
     public int compareTo(ClientService o) {
         if(o == null)return -1;
         if(this == o)return 0;
         else return 1;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 }

@@ -1,5 +1,7 @@
 package evan.client.utils;
 
+import evan.client.exceptions.LoginFailedException;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -35,12 +37,57 @@ public class ChatClient extends Frame {
 
     public int loginFrame(){
 
-        this.setLocation(750, 200);
-        setSize(160, 120);
+        this.setLocation(750, 400);
+        setSize(320, 160);
+
+        Button loginButton = new Button("Login");
+
+        TextField usernameTextField = new TextField(40);
+        TextField passwordTextField = new TextField(40);
+
+        this.add(usernameTextField, BorderLayout.NORTH);
+        this.add(passwordTextField);
+        this.add(loginButton, BorderLayout.AFTER_LAST_LINE);
+        this.pack();
+
+        this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                //System.out.println("Closing event triggered.");
+                close();
+            }
+        });
+
+        //System.out.println("Event added.");
+
+        textField.addActionListener(new TextFieldListener());
+
+        textField.addActionListener(new TextFieldListener());
+
+        this.connect();
+
+        massageListener = new MassageListenThread(input, textArea);
+        massageListenThread = new Thread(massageListener);
+        //massageListenThread.start();
 
         this.setVisible(true);
 
+        LoginButtonListener loginButtonListener = new LoginButtonListener(usernameTextField, passwordTextField);
 
+        loginButton.addActionListener(loginButtonListener);
+
+        /*
+        String returnCode = null;
+
+        while(returnCode == null){
+            returnCode = loginButtonListener.getReturnCode();
+        }
+
+        if(!returnCode.equals("ack")){
+            System.out.println(returnCode);
+            this.close();
+        }
+        */
 
         return 0;
     }
@@ -57,6 +104,7 @@ public class ChatClient extends Frame {
 
         //System.out.println("Frame launched");
 
+        /*
         this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -84,16 +132,19 @@ public class ChatClient extends Frame {
                 System.exit(0);
             }
         });
+        */
 
         //System.out.println("Event added.");
 
-        textField.addActionListener(new TextFieldListener());
+        //textField.addActionListener(new TextFieldListener());
 
-        this.connect();
+        //this.connect();
 
-        massageListener = new MassageListenThread(input, textArea);
-        massageListenThread = new Thread(massageListener);
-        massageListenThread.start();
+        /*
+            massageListener = new MassageListenThread(input, textArea);
+            massageListenThread = new Thread(massageListener);
+            massageListenThread.start();
+        */
 
         this.setVisible(true);
     }
@@ -128,6 +179,30 @@ public class ChatClient extends Frame {
             e.printStackTrace();
             System.exit(-1);
         }
+    }
+
+    public void close(){
+        try {
+            massageListener.setStopRequest(true);
+            input.close();
+            output.close();
+            socket.close();
+        } catch (IOException e1) {
+            e1.printStackTrace();
+            File exceptionFile = new File("errorlog.txt");
+            try {
+                FileOutputStream outputStream = new FileOutputStream(exceptionFile);
+                PrintWriter printWriter = new PrintWriter(outputStream);
+                for (int i = 0; i < e1.getStackTrace().length; ++i) {
+                    printWriter.println(e1.getStackTrace()[i]);
+                }
+            } catch (FileNotFoundException e2) {
+                e2.printStackTrace();
+                System.out.println("Fatal error.");
+                System.exit(-4);
+            }
+        }
+        System.exit(0);
     }
 
     private class MassageListenThread implements Runnable{
@@ -170,6 +245,56 @@ public class ChatClient extends Frame {
 
         public void setStopRequest(boolean stopRequest) {
             this.stopRequest = stopRequest;
+        }
+    }
+
+    private class LoginButtonListener implements ActionListener{
+
+        private TextField username;
+
+        private TextField password;
+
+        private String returnCode = null;
+
+        public LoginButtonListener(TextField username, TextField password) {
+            this.username = username;
+            this.password = password;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            String loginStr = "login-request-" + username.getText().trim() + "-" + password.getText().trim();
+            /*
+            System.out.println(username.getText().trim());
+            System.out.println(password.getText().trim());
+            */
+            try{
+                output.writeUTF(loginStr);
+                output.flush();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+
+            try {
+
+                System.out.println("Waiting return Code");
+
+                //System.out.println(System.currentTimeMillis());
+
+                returnCode = input.readUTF();
+
+                System.out.println("Return code got.");
+
+            } catch (IOException e1) {
+                //e1.printStackTrace();
+                returnCode = "failed";
+            }
+
+            System.out.println(returnCode);
+        }
+
+        public String getReturnCode() {
+            return returnCode;
         }
     }
 }

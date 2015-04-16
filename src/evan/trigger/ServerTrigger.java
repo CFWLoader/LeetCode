@@ -30,11 +30,19 @@ public class ServerTrigger {
 
                 clientService = new ClientService(chatServer, socket);
 
-                chatServer.getClients().add(clientService);
+                if(chatServer.validateUser(clientService) == 0) {
 
-                clientServiceThread = new Thread(clientService);
+                    System.out.println("Client validate.");
 
-                clientServiceThread.start();
+                    chatServer.getClients().add(clientService);
+
+                    clientServiceThread = new Thread(clientService);
+
+                    clientServiceThread.start();
+
+                }else{
+                    System.out.println("A client failed to join the room.");
+                }
             } catch (IOException e) {
                 e.printStackTrace();
                 System.out.println("A client failed to connect.");

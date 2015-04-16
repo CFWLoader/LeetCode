@@ -160,4 +160,57 @@ public class ChatServer {
         }
     }
     */
+
+    public int validateUser(ClientService clientService){
+
+        String rawStr = null;
+
+        try {
+             rawStr = clientService.getInputStream().readUTF();
+        } catch (IOException e) {
+            //e.printStackTrace();
+            return -1;
+        }
+
+        String[] loginInfo = rawStr.split("-");
+
+        String username = loginInfo[2];
+        String password = loginInfo[3];
+
+        /*
+        Here should be some data confirmation of user.
+        But I don't implement it because the database configuration
+        is hard to synchronize in other computer.
+         */
+
+        try {
+
+            clientService.getOutputStream().writeUTF("ack");
+
+            clientService.getOutputStream().flush();
+
+            //clientService.getOutputStream().flush();
+
+            int tickTock = 0;
+            while(tickTock++ < 20){
+
+                clientService.getOutputStream().writeUTF("ack");
+
+                clientService.getOutputStream().flush();
+
+                System.out.println("Trying " + tickTock);
+            }
+
+            //System.out.println(System.currentTimeMillis());
+
+            //System.out.println("Ack sent.");
+
+            clientService.setUsername(username);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return 0;
+    }
 }
