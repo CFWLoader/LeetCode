@@ -30,10 +30,19 @@ public class ChatClient extends Frame {
 
     private Thread massageListenThread;
 
+    /*
     public static void main(String[] args){
-        new ChatClient().loginFrame();
+        ChatClient chatClient = new ChatClient();
+
+        if(chatClient.loginFrame() == 0){
+
+            chatClient.removeAll();
+
+            chatClient.launchFrame();
+        }
         //new ChatClient().launchFrame();
     }
+    */
 
     public int loginFrame(){
 
@@ -88,6 +97,8 @@ public class ChatClient extends Frame {
             this.close();
         }
         */
+
+        while (loginButtonListener.getReturnCode() == null);
 
         return 0;
     }
@@ -277,20 +288,27 @@ public class ChatClient extends Frame {
 
             try {
 
-                System.out.println("Waiting return Code");
+                //System.out.println("Waiting return Code");
 
                 //System.out.println(System.currentTimeMillis());
 
                 returnCode = input.readUTF();
 
-                System.out.println("Return code got.");
+                //System.out.println("Return code got.");
 
             } catch (IOException e1) {
                 //e1.printStackTrace();
                 returnCode = "failed";
             }
 
-            System.out.println(returnCode);
+            //System.out.println(returnCode);
+            if(returnCode.trim().equals("ack")){
+                removeAll();
+
+                launchFrame();
+
+                massageListenThread.start();
+            }
         }
 
         public String getReturnCode() {

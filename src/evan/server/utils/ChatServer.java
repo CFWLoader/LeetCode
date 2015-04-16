@@ -191,6 +191,7 @@ public class ChatServer {
 
             //clientService.getOutputStream().flush();
 
+            /*
             int tickTock = 0;
             while(tickTock++ < 20){
 
@@ -200,6 +201,7 @@ public class ChatServer {
 
                 System.out.println("Trying " + tickTock);
             }
+            */
 
             //System.out.println(System.currentTimeMillis());
 

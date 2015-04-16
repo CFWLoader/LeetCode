@@ -57,7 +57,8 @@ public class ClientService extends Thread implements Comparable<ClientService>{
             } catch (EOFException eof){
                 break;
             } catch (IOException e) {
-                e.printStackTrace();
+                break;
+                //e.printStackTrace();
             }/* finally {
                     try {
                         inputStream.close();

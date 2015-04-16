@@ -32,7 +32,7 @@ public class ServerTrigger {
 
                 if(chatServer.validateUser(clientService) == 0) {
 
-                    System.out.println("Client validate.");
+                    //System.out.println("Client validate.");
 
                     chatServer.getClients().add(clientService);
 
