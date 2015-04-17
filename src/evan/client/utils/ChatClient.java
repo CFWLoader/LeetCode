@@ -71,7 +71,7 @@ public class ChatClient extends Frame {
 
         textField.addActionListener(new TextFieldListener());
 
-        textField.addActionListener(new TextFieldListener());
+        //textField.addActionListener(new TextFieldListener());
 
         this.connect();
 
@@ -308,6 +308,10 @@ public class ChatClient extends Frame {
                 launchFrame();
 
                 massageListenThread.start();
+            }else if(returnCode.trim().equals("repeated")){
+
+                username.setText("用户已登陆");
+
             }
         }
 

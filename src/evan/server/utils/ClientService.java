@@ -52,8 +52,9 @@ public class ClientService extends Thread implements Comparable<ClientService>{
             try {
                 words = inputStream.readUTF();
                 if(words == null)break;
-                System.out.println(words);
-                host.broadcast(username + ": " + words);
+                //System.out.println(words);
+                if(words.startsWith("login-request-"))host.specialRequest(words);               //Dealing special request.
+                else host.broadcast(username + ": " + words);
             } catch (EOFException eof){
                 break;
             } catch (IOException e) {

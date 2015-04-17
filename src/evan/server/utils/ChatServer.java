@@ -69,8 +69,8 @@ public class ChatServer {
         ChatServer.clients = clients;
     }
 
-    public void broadcast(String msg){
-        for(ClientService clientService : clients){
+    public void broadcast(String msg) {
+        for (ClientService clientService : clients) {
             try {
                 clientService.getOutputStream().writeUTF(msg);
                 clientService.getOutputStream().flush();
@@ -161,12 +161,16 @@ public class ChatServer {
     }
     */
 
-    public int validateUser(ClientService clientService){
+    public void specialRequest(String request){
+
+    }
+
+    public int validateUser(ClientService clientService) {
 
         String rawStr = null;
 
         try {
-             rawStr = clientService.getInputStream().readUTF();
+            rawStr = clientService.getInputStream().readUTF();
         } catch (IOException e) {
             //e.printStackTrace();
             return -1;
@@ -177,6 +181,15 @@ public class ChatServer {
         String username = loginInfo[2];
         String password = loginInfo[3];
 
+        boolean repeatLogin = false;
+
+        for (ClientService clientService1 : clients) {
+            if (clientService1.getUsername().equals(username)) {
+                repeatLogin = true;
+                break;
+            }
+        }
+
         /*
         Here should be some data confirmation of user.
         But I don't implement it because the database configuration
@@ -185,9 +198,20 @@ public class ChatServer {
 
         try {
 
-            clientService.getOutputStream().writeUTF("ack");
+            if (repeatLogin) {
 
-            clientService.getOutputStream().flush();
+                clientService.getOutputStream().writeUTF("repeated");
+
+                clientService.getOutputStream().flush();
+
+                return -1;
+
+            } else {
+
+                clientService.getOutputStream().writeUTF("ack");
+
+                clientService.getOutputStream().flush();
+            }
 
             //clientService.getOutputStream().flush();
 
