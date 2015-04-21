@@ -26,7 +26,7 @@ public class ChatClient extends Frame {
 
     private DataInputStream input;
 
-    private MassageListenThread massageListener;
+    private MessageListenThread massageListener;
 
     private Thread massageListenThread;
 
@@ -75,7 +75,7 @@ public class ChatClient extends Frame {
 
         this.connect();
 
-        massageListener = new MassageListenThread(input, textArea);
+        massageListener = new MessageListenThread(input, textArea);
         massageListenThread = new Thread(massageListener);
         //massageListenThread.start();
 
@@ -160,27 +160,6 @@ public class ChatClient extends Frame {
         this.setVisible(true);
     }
 
-    private class TextFieldListener implements ActionListener {
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            String str = textField.getText().trim();
-            //textArea.setText(str);
-            /*
-            textArea.append(String.valueOf(new Date(System.currentTimeMillis())) + "\n");
-            textArea.append("    " + str + "\n\n");
-            */
-            try {
-                output.writeUTF(str);
-                output.flush();
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
-
-            textField.setText("");
-        }
-    }
-
     public void connect(){
         try {
             socket = new Socket("127.0.0.1", 4991);
@@ -216,46 +195,24 @@ public class ChatClient extends Frame {
         System.exit(0);
     }
 
-    private class MassageListenThread implements Runnable{
-
-        private DataInputStream input;
-
-        private TextArea textArea;
-
-        private boolean stopRequest;
-
-        private MassageListenThread(DataInputStream input, TextArea textArea) {
-            this.input = input;
-            this.textArea = textArea;
-            stopRequest = false;
-        }
+    private class TextFieldListener implements ActionListener {
 
         @Override
-        public void run() {
-            String words;
-            while(true && !stopRequest){
-                try {
-                    words = input.readUTF();                       //The old reason that stop closing actions is used BufferedReader readline method.
-                    if(words == null)break;                         //It will block the thread even the input stream is closed. I have used DataInputStream to replace it.
-                    textArea.append(String.valueOf(new Date(System.currentTimeMillis())) + "\n");
-                    textArea.append("    " + words + "\n\n");
-                } catch (EOFException eofException){
-                    input = null;
-                    textArea = null;
-                } catch (IOException e) {
-                    //e.printStackTrace();
-                    input = null;
-                    textArea = null;
-                }
+        public void actionPerformed(ActionEvent e) {
+            String str = textField.getText().trim();
+            //textArea.setText(str);
+            /*
+            textArea.append(String.valueOf(new Date(System.currentTimeMillis())) + "\n");
+            textArea.append("    " + str + "\n\n");
+            */
+            try {
+                output.writeUTF(str);
+                output.flush();
+            } catch (IOException e1) {
+                e1.printStackTrace();
             }
 
-            System.out.println("Listen thread stopped.");
-            input = null;
-            textArea = null;
-        }
-
-        public void setStopRequest(boolean stopRequest) {
-            this.stopRequest = stopRequest;
+            textField.setText("");
         }
     }
 
