@@ -2,6 +2,7 @@ package evan.client.utils;
 
 import evan.client.exceptions.LoginFailedException;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -109,8 +110,15 @@ public class ChatClient extends Frame {
         this.setSize(960, 540);
         this.setTitle("Chat Room");
 
-        this.add(textArea, BorderLayout.NORTH);
+        Panel panel = new Panel();
+
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+        panel.add(new Label("房间中的用户"));
+
+        this.add(textArea, BorderLayout.CENTER);
         this.add(textField, BorderLayout.SOUTH);
+        this.add(panel, BorderLayout.EAST);
         this.pack();
 
         //System.out.println("Frame launched");
