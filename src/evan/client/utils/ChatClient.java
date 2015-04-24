@@ -112,6 +112,8 @@ public class ChatClient extends Frame {
         this.setSize(960, 540);
         this.setTitle("Chat Room");
 
+        panel = new Panel();
+
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
         panel.add(new Label("房间中的用户"));
@@ -169,6 +171,35 @@ public class ChatClient extends Frame {
     }
 
     public void requestHandle(String requestString){
+        String[] requestValue = requestString.split("-");
+
+        /*
+        for(int i = 0; i < requestValue.length; ++i){
+            System.out.println(requestValue[i]);
+        }
+        */
+        if(requestValue[1].trim().equals("userList"))this.updateUserList(requestValue);
+
+    }
+
+    public void updateUserList(String[] requestValue){
+
+        this.remove(panel);
+
+        panel = new Panel();
+
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+        panel.add(new Label("房间中的用户"));
+
+        for(int i = 2; i < requestValue.length; ++i){
+            panel.add(new Button(requestValue[i]));
+        }
+
+        this.add(panel, BorderLayout.EAST);
+
+        this.validate();
+        this.repaint();
 
     }
 

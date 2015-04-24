@@ -53,7 +53,7 @@ public class ClientService extends Thread implements Comparable<ClientService>{
                 words = inputStream.readUTF();
                 if(words == null)break;
                 //System.out.println(words);
-                if(words.startsWith("request-login-"))host.specialRequest(words);               //Dealing special request.
+                if(words.startsWith("request-"))host.specialRequest(words);               //Dealing special request.
                 else host.broadcast(username + ": " + words);
             } catch (EOFException eof){
                 break;
@@ -75,7 +75,10 @@ public class ClientService extends Thread implements Comparable<ClientService>{
             inputStream.close();
 
             host.getClients().remove(this);
+
             System.out.println("Client: " + clientSocket.getPort() + " exited.");
+
+            host.notifyAllUserToUpdateUserList();
 
             clientSocket.close();
         } catch (IOException e) {

@@ -75,7 +75,7 @@ public class ChatServer {
                 clientService.getOutputStream().writeUTF(msg);
                 clientService.getOutputStream().flush();
             } catch (IOException e) {
-                e.printStackTrace();
+                //e.printStackTrace();
             }
             /*
             clientService.getPrintWriter().println(clientService.clientSocket.getPort() + ":  " + msg);
@@ -163,6 +163,22 @@ public class ChatServer {
 
     public void specialRequest(String request) {
 
+    }
+
+    public void notifyAllUserToUpdateUserList(){
+
+        StringBuilder stringBuilder = new StringBuilder();
+
+        stringBuilder.append("request-userList-");
+
+        for(ClientService clientService : clients){
+            stringBuilder.append(clientService.getUsername());
+            stringBuilder.append("-");
+        }
+
+        stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+
+        this.broadcast(stringBuilder.toString());
     }
 
     public int validateUser(ClientService clientService) {

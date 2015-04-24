@@ -36,6 +36,8 @@ public class ServerTrigger {
 
                     chatServer.getClients().add(clientService);
 
+                    chatServer.notifyAllUserToUpdateUserList();
+
                     clientServiceThread = new Thread(clientService);
 
                     clientServiceThread.start();
