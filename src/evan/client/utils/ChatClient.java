@@ -17,6 +17,8 @@ import java.util.Date;
  */
 public class ChatClient extends Frame {
 
+    private Panel panel;
+
     private TextField textField = new TextField(50);
 
     private TextArea textArea = new TextArea(40, 80);
@@ -76,7 +78,7 @@ public class ChatClient extends Frame {
 
         this.connect();
 
-        massageListener = new MessageListenThread(input, textArea);
+        massageListener = new MessageListenThread(this, input, textArea);
         massageListenThread = new Thread(massageListener);
         //massageListenThread.start();
 
@@ -109,8 +111,6 @@ public class ChatClient extends Frame {
         this.setLocation(600, 150);
         this.setSize(960, 540);
         this.setTitle("Chat Room");
-
-        Panel panel = new Panel();
 
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
@@ -166,6 +166,10 @@ public class ChatClient extends Frame {
         */
 
         this.setVisible(true);
+    }
+
+    public void requestHandle(String requestString){
+
     }
 
     public void connect(){
@@ -239,7 +243,7 @@ public class ChatClient extends Frame {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            String loginStr = "login-request-" + username.getText().trim() + "-" + password.getText().trim();
+            String loginStr = "request-login-" + username.getText().trim() + "-" + password.getText().trim();
             /*
             System.out.println(username.getText().trim());
             System.out.println(password.getText().trim());

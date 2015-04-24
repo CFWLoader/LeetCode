@@ -161,7 +161,7 @@ public class ChatServer {
     }
     */
 
-    public void specialRequest(String request){
+    public void specialRequest(String request) {
 
     }
 
@@ -178,8 +178,15 @@ public class ChatServer {
 
         String[] loginInfo = rawStr.split("-");
 
-        String username = loginInfo[2];
-        String password = loginInfo[3];
+        String password = null;
+        String username = null;
+
+        try {
+            username = loginInfo[2];
+            password = loginInfo[3];
+        } catch (NullPointerException e) {
+            return -1;
+        }
 
         boolean repeatLogin = false;
 

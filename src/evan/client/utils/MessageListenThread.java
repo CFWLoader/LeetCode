@@ -10,13 +10,17 @@ import java.util.Date;
  * Created by cfwloader on 4/22/15.
  */
 public class MessageListenThread implements Runnable{
+
+    private ChatClient chatClient;
+
     private DataInputStream input;
 
     private TextArea textArea;
 
     private boolean stopRequest;
 
-    public MessageListenThread(DataInputStream input, TextArea textArea) {
+    public MessageListenThread(ChatClient chatClient, DataInputStream input, TextArea textArea) {
+        this.chatClient = chatClient;
         this.input = input;
         this.textArea = textArea;
         stopRequest = false;
@@ -29,8 +33,12 @@ public class MessageListenThread implements Runnable{
             try {
                 words = input.readUTF();                       //The old reason that stop closing actions is used BufferedReader readline method.
                 if(words == null)break;                         //It will block the thread even the input stream is closed. I have used DataInputStream to replace it.
-                textArea.append(String.valueOf(new Date(System.currentTimeMillis())) + "\n");
-                textArea.append("    " + words + "\n\n");
+                if(words.startsWith("request-")){
+                    chatClient.requestHandle(words);
+                }else {
+                    textArea.append(String.valueOf(new Date(System.currentTimeMillis())) + "\n");
+                    textArea.append("    " + words + "\n\n");
+                }
             } catch (EOFException eofException){
                 input = null;
                 textArea = null;
