@@ -1,6 +1,7 @@
 package evan.client.utils;
 
 import evan.client.exceptions.LoginFailedException;
+import evan.client.utils.listeners.PrivateChatButtonListener;
 
 import javax.swing.*;
 import java.awt.*;
@@ -192,8 +193,12 @@ public class ChatClient extends Frame {
 
         panel.add(new Label("房间中的用户"));
 
+        Button button = null;
+
         for(int i = 2; i < requestValue.length; ++i){
-            panel.add(new Button(requestValue[i]));
+            button = new Button(requestValue[i]);
+            button.addActionListener(new PrivateChatButtonListener(this));
+            panel.add(button);
         }
 
         this.add(panel, BorderLayout.EAST);
