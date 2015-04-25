@@ -7,6 +7,9 @@ import java.sql.SQLException;
 /**
  * Created by cfwloader on 4/1/15.
  */
+
+//数据库用于存储用户信息，可惜上机的地方懒得搞数据库了。
+//于是这些数据库连接器，DAO什么的就放着看看。
 public class MySQLConnectionGenerator {
 
     static{

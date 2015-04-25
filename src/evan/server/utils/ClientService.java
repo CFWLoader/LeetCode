@@ -10,8 +10,11 @@ import java.net.Socket;
 /**
  * Created by cfwloader on 4/16/15.
  */
+
+//服务器端用的，用于维护客户端的类。
 public class ClientService extends Thread implements Comparable<ClientService>{
 
+    //回调时用的。
     private ChatServer host;
 
     private Socket clientSocket;
@@ -20,6 +23,7 @@ public class ClientService extends Thread implements Comparable<ClientService>{
 
     private DataOutputStream outputStream;
 
+    //当作ID用的名字。检测重复登陆靠它了。
     private String username;
 
     public ClientService(ChatServer chatServer, Socket socket) {
@@ -45,6 +49,7 @@ public class ClientService extends Thread implements Comparable<ClientService>{
             }*/
     }
 
+    //每个用户线程都会独立拥有一个用于监听来自于客户端的消息的线程。
     @Override
     public void run() {
         String words;
@@ -53,6 +58,7 @@ public class ClientService extends Thread implements Comparable<ClientService>{
                 words = inputStream.readUTF();
                 if(words == null)break;
                 //System.out.println(words);
+                //特殊请求处理。
                 if(words.startsWith("request-"))host.specialRequest(words + "-" + username);               //Dealing special request.
                 else host.broadcast(username + ": " + words);
             } catch (EOFException eof){

@@ -20,6 +20,10 @@ import java.util.List;
 /**
  * Created by cfwloader on 3/16/15.
  */
+
+/**
+ * 因为是边做原型边设计，所以该类设计得有点难看，该解耦的部分解耦了，部分懒得解耦了。
+ */
 public class ChatClient extends Frame {
 
     private Panel panel;
@@ -30,16 +34,20 @@ public class ChatClient extends Frame {
 
     private Socket socket;
 
+    //一个客户端的IO都是共用的，争抢问题。
     private DataOutputStream output;
 
     private DataInputStream input;
 
+    //公共聊天室的监听线程
     private MessageListenThread massageListener;
 
+    //这个设计看起来有点多余
     private Thread massageListenThread;
 
     private String globalUsername;
 
+    //考虑到该客户端有多个私人聊天室,使用一个list维护，轮询方式找目标窗口。
     private List<PrivateRoomFrame> privateRoomFrames;
 
     /*
@@ -56,6 +64,7 @@ public class ChatClient extends Frame {
     }
     */
 
+    //getter都是用来回调的时候用的。
     public DataOutputStream getOutput() {
         return output;
     }
@@ -72,8 +81,10 @@ public class ChatClient extends Frame {
         return privateRoomFrames;
     }
 
+    //登陆用的界面，顺带初始化这个客户端。
     public int loginFrame(){
 
+        //私人聊天室的维护列表在此初始化
         privateRoomFrames = new LinkedList<PrivateRoomFrame>();
 
         this.setLocation(750, 400);
@@ -103,8 +114,10 @@ public class ChatClient extends Frame {
 
         //textField.addActionListener(new TextFieldListener());
 
+        //Socket初始化函数在此调用。
         this.connect();
 
+        //监听进程在此初始化，但不启动。
         massageListener = new MessageListenThread(this, input, textArea);
         massageListenThread = new Thread(massageListener);
         //massageListenThread.start();
@@ -128,11 +141,13 @@ public class ChatClient extends Frame {
         }
         */
 
+        //等待登陆验证
         while (loginButtonListener.getReturnCode() == null);
 
         return 0;
     }
 
+    //公共聊天室的GUI初始化。
     public void launchFrame(){
 
         this.setLocation(600, 150);
@@ -197,6 +212,7 @@ public class ChatClient extends Frame {
         this.setVisible(true);
     }
 
+    //除了公共聊天里面的信息，其他server过来的都是带着请求的东西，全部集中在这个方法处理。
     public void requestHandle(String requestString){
         String[] requestValue = requestString.split("-");
 
@@ -207,15 +223,21 @@ public class ChatClient extends Frame {
             System.out.println(requestValue[i]);
         }
         */
+
+        //客户端更新用户列表。
         if(requestValue[1].trim().equals("userList"))this.updateUserList(requestValue);
 
+        //有人发起了对你的私人聊天，被动创建一个私人房间。
         if(requestValue[1].trim().equals("privateChat")) {
 
             //System.out.println("A client requested a private chat");
             //System.out.println(requestString);
 
+            //刚开始没理清请求的语句顺序，导致私人聊天室的逻辑混乱。
             PrivateRoomFrame privateRoomFrame = new PrivateRoomFrame("Private room - " + requestValue[2]);
             privateRoomFrame.setChatClient(this);
+
+            //设定对方的名字，相当于ID。以后每次发起私人信息都用这个让server识别信息的目标。
             privateRoomFrame.setOppositeUsername(requestValue[2]);
 
             privateRoomFrames.add(privateRoomFrame);
@@ -223,12 +245,14 @@ public class ChatClient extends Frame {
             new Thread(new PrivateRoomThread(privateRoomFrame)).start();
         }
 
+        //私人聊天语句信息。
         if(requestValue[1].trim().equals("private")){
 
             System.out.println(requestString);
 
             String oppositeUsername = requestValue[4].trim();
 
+            //万恶的轮询方式，一点都不优雅，懒得去给它写优雅一些了。
             for(PrivateRoomFrame privateRoomFrame : privateRoomFrames){
                 if(privateRoomFrame.getOppositeUsername().equals(oppositeUsername)){
                     privateRoomFrame.getTextArea().append(String.valueOf(new Date(System.currentTimeMillis())) + "\n");
@@ -275,6 +299,7 @@ public class ChatClient extends Frame {
         }
     }
 
+    //退出客户端的时候调用这个方法。
     public void close(){
         try {
             massageListener.setStopRequest(true);
@@ -299,6 +324,7 @@ public class ChatClient extends Frame {
         System.exit(0);
     }
 
+    //输入之后击键Enter触发发送消息。
     private class TextFieldListener implements ActionListener {
 
         @Override
@@ -320,6 +346,7 @@ public class ChatClient extends Frame {
         }
     }
 
+    //登陆的事件监听器。
     private class LoginButtonListener implements ActionListener{
 
         private TextField username;

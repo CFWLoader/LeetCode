@@ -11,12 +11,16 @@ import java.util.concurrent.ConcurrentSkipListSet;
 /**
  * Created by cfwloader on 3/17/15.
  */
+
+//聊天室的服务类，多用户频发信息的时候应该会引发IO的异常。
 public class ChatServer {
 
     private ServerSocket serverSocket;
 
     private Set<ClientService> clients;
 
+    //本来想做一个map来映射私人聊天室的客户关系，后来想想有点复杂，不做了。
+    //使用万恶的轮询方式。
     //private Map<ClientService, ClientService> privateChats;
 
     /*
@@ -76,6 +80,7 @@ public class ChatServer {
         this.clients = clients;
     }
 
+    //公共聊天室用的广播方法。
     public void broadcast(String msg) {
         for (ClientService clientService : clients) {
             try {
@@ -168,10 +173,12 @@ public class ChatServer {
     }
     */
 
+    //处理来自客户端的用户请求。
     public void specialRequest(String request) {
 
         String[] requestContents = request.split("-");
 
+        //请求私人聊天搭线，万恶的轮询方法查找目标客户端。
         if(requestContents[1].trim().equals("privateChat")){
             //System.out.println("A private chat accept.");
             //System.out.println("From " + requestContents[2]);
@@ -199,6 +206,7 @@ public class ChatServer {
             }
         }
 
+        //私人消息的处理，轮询又来了。
         if(requestContents[1].trim().equals("private")){
             //System.out.println("A private chat accept.");
             //System.out.println("From " + requestContents[2]);
@@ -228,6 +236,7 @@ public class ChatServer {
         }
     }
 
+    //每次有用户进入聊天室或者退出，都会通知聊天室内的用户更新自己的用户列表。
     public void notifyAllUserToUpdateUserList(){
 
         StringBuilder stringBuilder = new StringBuilder();
@@ -244,6 +253,7 @@ public class ChatServer {
         this.broadcast(stringBuilder.toString());
     }
 
+    //登陆验证函数，没有数据库，只能检测重复登陆问题。
     public int validateUser(ClientService clientService) {
 
         String rawStr = null;

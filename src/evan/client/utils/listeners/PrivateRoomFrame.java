@@ -13,6 +13,10 @@ import java.util.Date;
 /**
  * Created by cfwloader on 4/25/15.
  */
+
+/**
+ * 私人聊天室用的GUI，和公共聊天室共用一个Socket的IO，消息频发的时候可能产生争抢问题。
+ */
 public class PrivateRoomFrame extends Frame {
 
     private ChatClient chatClient;
@@ -79,6 +83,7 @@ public class PrivateRoomFrame extends Frame {
         this.textField = textField;
     }
 
+    //GUI的初始化和公共聊天室差不多。
     public void launch(){
 
         this.setLocation(600, 150);
