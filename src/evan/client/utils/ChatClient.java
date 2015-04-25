@@ -34,6 +34,8 @@ public class ChatClient extends Frame {
 
     private Thread massageListenThread;
 
+    private String globalUsername;
+
     /*
     public static void main(String[] args){
         ChatClient chatClient = new ChatClient();
@@ -47,6 +49,18 @@ public class ChatClient extends Frame {
         //new ChatClient().launchFrame();
     }
     */
+
+    public DataOutputStream getOutput() {
+        return output;
+    }
+
+    public String getGlobalUsername() {
+        return globalUsername;
+    }
+
+    public DataInputStream getInput() {
+        return input;
+    }
 
     public int loginFrame(){
 
@@ -274,11 +288,15 @@ public class ChatClient extends Frame {
 
         public LoginButtonListener(TextField username, TextField password) {
             this.username = username;
+
             this.password = password;
         }
 
         @Override
         public void actionPerformed(ActionEvent e) {
+
+            globalUsername = username.getText().trim();
+
             String loginStr = "request-login-" + username.getText().trim() + "-" + password.getText().trim();
             /*
             System.out.println(username.getText().trim());

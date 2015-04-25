@@ -3,6 +3,8 @@ package evan.server.utils;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
 
@@ -14,6 +16,8 @@ public class ChatServer {
     private ServerSocket serverSocket;
 
     private static Set<ClientService> clients;
+
+    private Map<ClientService, ClientService> privateChats;
 
     /*
     public static void main(String[] args) {
@@ -45,6 +49,9 @@ public class ChatServer {
     */
 
     public ChatServer() {
+
+        privateChats = new HashMap<ClientService, ClientService>();
+
         try {
             serverSocket = new ServerSocket(4991);
         } catch (IOException e) {
@@ -163,6 +170,11 @@ public class ChatServer {
 
     public void specialRequest(String request) {
 
+        String[] requestContents = request.split("-");
+
+        if(requestContents[1].trim().equals("privateChat")){
+            System.out.println("A private chat accept.");
+        }
     }
 
     public void notifyAllUserToUpdateUserList(){
