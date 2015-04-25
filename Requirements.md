@@ -4,7 +4,7 @@
 1. Chat Room.(Complete)
 1. Register.(Unimplemented)
 1. Login.(Simulation without database)
-1. Private Room.(Unimplemented)
+1. Private Room.(implemented)
 1. Examination of repeat login.(Implemented but not perfect)
 
 ### Extra(It seems I will never implement them.)

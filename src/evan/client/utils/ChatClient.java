@@ -2,6 +2,8 @@ package evan.client.utils;
 
 import evan.client.exceptions.LoginFailedException;
 import evan.client.utils.listeners.PrivateChatButtonListener;
+import evan.client.utils.listeners.PrivateRoomFrame;
+import evan.client.utils.thread.PrivateRoomThread;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,6 +14,8 @@ import java.awt.event.WindowEvent;
 import java.io.*;
 import java.net.Socket;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Created by cfwloader on 3/16/15.
@@ -35,6 +39,8 @@ public class ChatClient extends Frame {
     private Thread massageListenThread;
 
     private String globalUsername;
+
+    private List<PrivateRoomFrame> privateRoomFrames;
 
     /*
     public static void main(String[] args){
@@ -62,7 +68,13 @@ public class ChatClient extends Frame {
         return input;
     }
 
+    public List<PrivateRoomFrame> getPrivateRoomFrames() {
+        return privateRoomFrames;
+    }
+
     public int loginFrame(){
+
+        privateRoomFrames = new LinkedList<PrivateRoomFrame>();
 
         this.setLocation(750, 400);
         setSize(320, 160);
@@ -188,6 +200,8 @@ public class ChatClient extends Frame {
     public void requestHandle(String requestString){
         String[] requestValue = requestString.split("-");
 
+        //System.out.println(requestString);
+
         /*
         for(int i = 0; i < requestValue.length; ++i){
             System.out.println(requestValue[i]);
@@ -195,6 +209,34 @@ public class ChatClient extends Frame {
         */
         if(requestValue[1].trim().equals("userList"))this.updateUserList(requestValue);
 
+        if(requestValue[1].trim().equals("privateChat")) {
+
+            //System.out.println("A client requested a private chat");
+            //System.out.println(requestString);
+
+            PrivateRoomFrame privateRoomFrame = new PrivateRoomFrame("Private room - " + requestValue[2]);
+            privateRoomFrame.setChatClient(this);
+            privateRoomFrame.setOppositeUsername(requestValue[2]);
+
+            privateRoomFrames.add(privateRoomFrame);
+
+            new Thread(new PrivateRoomThread(privateRoomFrame)).start();
+        }
+
+        if(requestValue[1].trim().equals("private")){
+
+            System.out.println(requestString);
+
+            String oppositeUsername = requestValue[4].trim();
+
+            for(PrivateRoomFrame privateRoomFrame : privateRoomFrames){
+                if(privateRoomFrame.getOppositeUsername().equals(oppositeUsername)){
+                    privateRoomFrame.getTextArea().append(String.valueOf(new Date(System.currentTimeMillis())) + "\n");
+                    privateRoomFrame.getTextArea().append(oppositeUsername + ": " + "    " + requestValue[3] + "\n\n");
+                    break;
+                }
+            }
+        }
     }
 
     public void updateUserList(String[] requestValue){
@@ -211,7 +253,7 @@ public class ChatClient extends Frame {
 
         for(int i = 2; i < requestValue.length; ++i){
             button = new Button(requestValue[i]);
-            button.addActionListener(new PrivateChatButtonListener(this));
+            button.addActionListener(new PrivateChatButtonListener(this, requestValue[i]));
             panel.add(button);
         }
 

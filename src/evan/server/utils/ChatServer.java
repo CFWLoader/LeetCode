@@ -15,9 +15,9 @@ public class ChatServer {
 
     private ServerSocket serverSocket;
 
-    private static Set<ClientService> clients;
+    private Set<ClientService> clients;
 
-    private Map<ClientService, ClientService> privateChats;
+    //private Map<ClientService, ClientService> privateChats;
 
     /*
     public static void main(String[] args) {
@@ -50,7 +50,7 @@ public class ChatServer {
 
     public ChatServer() {
 
-        privateChats = new HashMap<ClientService, ClientService>();
+        //privateChats = new HashMap<ClientService, ClientService>();
 
         try {
             serverSocket = new ServerSocket(4991);
@@ -73,7 +73,7 @@ public class ChatServer {
     }
 
     public void setClients(Set<ClientService> clients) {
-        ChatServer.clients = clients;
+        this.clients = clients;
     }
 
     public void broadcast(String msg) {
@@ -173,7 +173,58 @@ public class ChatServer {
         String[] requestContents = request.split("-");
 
         if(requestContents[1].trim().equals("privateChat")){
-            System.out.println("A private chat accept.");
+            //System.out.println("A private chat accept.");
+            //System.out.println("From " + requestContents[2]);
+            //System.out.println("To " + requestContents[3]);
+            ClientService targetClient = null;
+
+            for(ClientService clientService : clients){
+                if(clientService.getUsername().equals(requestContents[3])){
+                    targetClient = clientService;
+                    break;
+                }
+            }
+
+            //System.out.println("Target:" + targetClient.getUsername());
+            if(targetClient !=  null) {
+                try {
+                    targetClient.getOutputStream().writeUTF(request);
+                    targetClient.getOutputStream().flush();
+                } catch (IOException e) {
+
+                    //注意这里吞了异常
+
+                    //e.printStackTrace();
+                }
+            }
+        }
+
+        if(requestContents[1].trim().equals("private")){
+            //System.out.println("A private chat accept.");
+            //System.out.println("From " + requestContents[2]);
+            //System.out.println("To " + requestContents[3]);
+            ClientService targetClient = null;
+
+            for(ClientService clientService : clients){
+                if(clientService.getUsername().equals(requestContents[2])){
+                    targetClient = clientService;
+                    break;
+                }
+            }
+
+            //System.out.println("Target:" + targetClient.getUsername());
+
+            if(targetClient !=  null) {
+                try {
+                    targetClient.getOutputStream().writeUTF(request);
+                    targetClient.getOutputStream().flush();
+                } catch (IOException e) {
+
+                    //注意这里吞了异常
+
+                    //e.printStackTrace();
+                }
+            }
         }
     }
 
