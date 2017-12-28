@@ -1,0 +1,1 @@
+# Problem 27 - Remove Element
