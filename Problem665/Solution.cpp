@@ -2,20 +2,36 @@ class Solution {
 public:
     bool checkPossibility(vector<int>& nums) {
         
-        int violations = 0;
+        int breakPoint = -1;
         
         for(int idx = 0; idx < nums.size() - 1; ++idx)
         {
             if(nums[idx] > nums[idx + 1])
             {
-                nums[idx] = nums[idx + 1];
-                ++violations;
+                breakPoint = idx + 1;
+                break;
             }
-            
-            if(violations > 1)
+        }
+        
+        if(breakPoint == -1)
+        {
+            return true;
+        }
+        
+        if(breakPoint + 1 < nums.size())
+        {
+            if(nums[breakPoint - 1] > nums[breakPoint + 1])
             {
-                return false;
+                nums[breakPoint - 1] = nums[breakPoint];
             }
+            else
+            {
+                nums[breakPoint] = nums[breakPoint + 1];
+            }
+        }
+        else
+        {
+            nums[breakPoint] = nums[breakPoint - 1];
         }
         
         for(int idx = 0; idx < nums.size() - 1; ++idx)
