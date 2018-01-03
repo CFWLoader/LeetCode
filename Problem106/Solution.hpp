@@ -43,8 +43,7 @@ public:
 
         TreeNode* root = new TreeNode(postorder[postIdx]);
 
-        // TODO
-        root->left = buildTree(inorder, postorder, inLeft, rootIdx - 1, rootIdx - 1);
+        root->left = buildTree(inorder, postorder, inLeft, rootIdx - 1, postIdx - inRight + rootIdx - 1);
 
         root->right = buildTree(inorder, postorder, rootIdx + 1, inRight, postIdx - 1);
 
