@@ -33,10 +33,27 @@ public:
             this->generateCombinations(combinations, preSeq, num, len);
         }
 
-        cout << "-----------Result-----------" << endl;
-        for(auto seq : combinations)
+//        cout << "-----------Result-----------" << endl;
+//        for(auto seq : combinations)
+//        {
+//            printIntVec(seq);
+//        }
+
+        int sum = 0;
+
+        vector<string> resultStrings;
+
+        for(auto combi : combinations)
         {
-            printIntVec(seq);
+            sum = combi[0];
+
+            if(combi.size() == 1)
+            {
+                if(sum == target)
+                {
+
+                }
+            }
         }
 
         return vector<string>();
@@ -51,14 +68,11 @@ public:
             return;
         }
 
-        cout << "Starting with:";
-        printIntVec(preSeq);
-
-        for(int len = 1; startIdx + len < num.size(); ++len)
+        for(int len = 1; startIdx + len <= num.size(); ++len)
         {
             vector<int> curPreSeq(preSeq.begin(), preSeq.end());
 
-            cout << "Getting: " << convertInt(num, startIdx, len) << endl;
+//            cout << "Getting: " << convertInt(num, startIdx, len) << endl;
 
             curPreSeq.push_back(this->convertInt(num, startIdx, len));
 
